@@ -28,3 +28,13 @@ Route::post('/signup', function (Request $request) {
 
     return Response::json(compact('token'));
 });
+
+Route::post('/signin', function (Request $request) {
+    $credentials = $request->only('email', 'password');
+
+    if (!$token = JWTAuth::attempt($credentials)) {
+        return Response::json(false, HttpResponse::HTTP_UNAUTHORIZED);
+    }
+
+    return Response::json(compact('token'));
+});
