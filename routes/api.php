@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\User;
+use Illuminate\Http\Response as HttpResponse;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +15,16 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/signup', function (Request $request) {
+    $credentials = $request->only('name', 'email', 'password');
+
+    try {
+        $user = User::create($credentials);
+    } catch (Exception $e) {
+        return Response::json(['error' => 'User already exists.'], HttpResponse::HTTP_CONFLICT);
+    }
+
+    $token = JWTAuth::fromUser($user);
+
+    return Response::json(compact('token'));
 });
